@@ -1,0 +1,17 @@
+{
+  "name": "mini_proj_blog-app",
+  "version": "1.0.0",
+  "description": "",
+  "author": "Roman Zeno <zeno385@gmail.com>",
+  "license": "ISC",
+  "type": "module",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "json-server db.json"
+  },
+  "keywords": [],
+  "dependencies": {
+    "json-server": "^1.0.0-beta.3"
+  }
+}

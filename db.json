@@ -1,0 +1,22 @@
+{
+    "posts": [
+        {
+            "id": 1,
+            "author": "Admin",
+            "title": "Перший пост",
+            "content": "Це приклад поста",
+            "comments": [
+                {
+                    "id": 1,
+                    "text": "Класний пост!"
+                }
+            ]
+        },
+        {
+            "id": "228b",
+            "title": "autor",
+            "content": "lorem10",
+            "comments": []
+        }
+    ]
+}
