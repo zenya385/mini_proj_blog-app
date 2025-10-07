@@ -61,7 +61,7 @@ function renderPosts(posts) {
   container.innerHTML = "";
 
   posts.forEach((post) => {
-    const postEl = createElement("div");
+    const postEl = document.createElement("div");
     postEl.classList.add("post");
     postEl.innerHTML = `
         <h2>${post.title}</h2>
@@ -76,7 +76,7 @@ function renderPosts(posts) {
           <h3>Коментарі:</h3>
 
           <ul>
-          ${post.comments.map((comment) => <li>${comment.text}</li>).join("")}
+          ${post.comments.map((comment) => `<li>${comment.text}</li>`).join("")}
             
           </ul>
 
@@ -91,8 +91,7 @@ function renderPosts(posts) {
             <button type="submit">Додати коментар</button>
           </form>
         </div>
-    
-    `;
+        `;
     container.appendChild(postEl);
   });
 }
@@ -113,12 +112,12 @@ function renderPosts(posts) {
 
 // document.addEventListener("submit", cb);
 
-// // Запуск додатку
+// Запуск додатку
 
-// async function startApp() {
-//   const posts = await getPosts();
+async function startApp() {
+  const posts = await getPosts();
 
-//   renderPosts(posts);
-// }
+  renderPosts(posts);
+}
 
-// startApp();
+startApp();
