@@ -1,66 +1,93 @@
-const API_URL = "http://localhost:3000/posts/";
+const API_URL = "http://localhost:3000/posts";
+
 // Отримання списку постів
 
 async function getPosts() {
   try {
     const res = await fetch(API_URL);
-    console.log(res);
     if (!res.ok) {
       throw new Error("Пости не знайдено помилка 404");
     }
-    return res.json();
+    return await res.json();
   } catch (error) {
     console.error(error);
   }
 }
 
-// getPosts().then((data) => {
-//   console.log("data", data);
-// });
-
 // // Створення нового поста
 
-// async function createPost(title, content) {
-//   try {
-//   } catch (error) {
-//     console.error(error);
-//   }
-// }
+async function createPost(title, content) {
+  try {
+    const post = { title, content, comments: [] };
+    const options = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(post),
+    };
+    const res = await fetch(API_URL, options);
+    return await res.json();
+  } catch (error) {
+    console.error(error);
+  }
+}
 
 // // Оновлення поста
 
-// async function updatePost(id, title, content) {
-//   try {
-//   } catch (error) {
-//     console.error(error);
-//   }
-// }
+async function updatePost(id, title, content) {
+  try {
+    const options = {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title, content }),
+    };
+    const res = await fetch(`${API_URL}/${id}`, options);
+    console.log("res", res);
+    return await res.json();
+  } catch (error) {
+    console.error(error);
+  }
+}
 
 // // Видалення поста
 
-// async function deletePost(id) {
-//   try {
-//   } catch (error) {
-//     console.error(error);
-//   }
-// }
+async function deletePost(id) {
+  try {
+    await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+  } catch (error) {
+    console.error(error);
+  }
+}
 
-// // Додавання коментаря до поста
+// Додавання коментаря до поста
 
-// async function createComment(postId, comment) {
-//   try {
-//   } catch (error) {
-//     console.error(error);
-//   }
-// }
+async function createComment(postId, comment) {
+  try {
+    const res = await fetch(`${API_URL}/${postId}`);
+    if (!res.ok) throw new Error(`Пост ${postId} не знайдено`);
+    const post = await res.json();
+    post.comments.push({ id: Date.now(), text: comment });
+
+    const options = {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ comments: post.comments }),
+    };
+    await fetch(`${API_URL}/${postId}`, options);
+  } catch (error) {
+    console.error(error);
+  }
+}
 
 // Оновлення відображення постів на сторінці
 
 function renderPosts(posts) {
+  // console.log(posts);
+
   const container = document.querySelector("#postsContainer");
   container.innerHTML = "";
 
   posts.forEach((post) => {
+    // console.log("post", post);
     const postEl = document.createElement("div");
     postEl.classList.add("post");
     postEl.innerHTML = `
@@ -98,19 +125,56 @@ function renderPosts(posts) {
 
 // // Обробник події для створення поста
 
-// document.getElementById("createPostForm").addEventListener("submit", cb);
+document
+  .getElementById("createPostForm")
+  .addEventListener("submit", handlerCreatePost);
 
-// // Обробник події для редагування поста
+async function handlerCreatePost(evt) {
+  evt.preventDefault();
+  const title = document.querySelector("#titleInput").value;
+  const content = document.querySelector("#contentInput").value;
+  await createPost(title, content);
+  renderPosts(await getPosts());
+  evt.target.reset();
+}
 
-// document.addEventListener("click", cb);
+// Обробник події для редагування поста
 
-// // Обробник події для видалення поста
+document.addEventListener("click", async (evt) => {
+  if (evt.target.classList.contains("editPostButton")) {
+    evt.preventDefault();
+    const id = evt.target.dataset.id;
+    const newTitle = prompt("Новий заголовок:");
+    const newContent = prompt("Новий зміст:");
 
-// document.addEventListener("click", cb);
+    if (newTitle && newContent) {
+      await updatePost(id, newTitle, newContent);
+      renderPosts(await getPosts());
+    }
+  }
+});
 
-// // Обробник події для додавання коментаря
+// Обробник події для видалення поста
 
-// document.addEventListener("submit", cb);
+document.addEventListener("click", async (e) => {
+  if (e.target.classList.contains("deletePostButton")) {
+    const id = e.target.dataset.id;
+    await deletePost(id);
+    renderPosts(await getPosts());
+  }
+});
+
+// Обробник події для додавання коментаря
+
+document.addEventListener("submit", async (e) => {
+  if (e.target.classList.contains("createCommentForm")) {
+    e.preventDefault();
+    const postId = e.target.dataset.id;
+    const input = e.target.querySelector(".commentInput");
+    await createComment(postId, input.value);
+    renderPosts(await getPosts());
+  }
+});
 
 // Запуск додатку
 
